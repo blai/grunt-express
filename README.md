@@ -2,12 +2,14 @@
 
 > Start an express/connect web server.
 This plugin is largely based on grunt-contrib-connect. It aims to solve the following use cases that grunt-contrib-connect does not seem to have an answer for:
+
 1. Enabling custom express/connect server, especially in cases when socket.io is in the mix (https://github.com/yeoman/express-stack/issues/15#issuecomment-13217532)
 2. Watch for changes to the server script(s) and restart the express/connect server (https://github.com/yeoman/express-stack/issues/7)
 
 
 ## Philosophy
 The philosophy behind the birth of this mutant of grunt-contrib-connect is:
+
 1. Flexibility. I learned a few lessons from working on some enhancement to [Yeoman](http://yeoman.io)'s `server` task. Express.js and Connect are so flexible that the only way to accommodate their full flexibility seems to be accepting a custom module that actually exports such object. An extreme case of this comes from [Socket.io](http://socket.io/#how-to-use), which forces http.Server, express/connect, and socket.io be instanciate in a very specific way.
 2. Grunt/Yeoman is mainly for development/deployment. When rung web server in dev environment, following features are in high demand:
   * auto-rebuild/auto-reload (both web browser and server), livereload solved only half of this demand. While it may not be common, livereload on the browser end is also a demand for production environment, so I prefer using [tiny-rl](https://github.com/mklabs/tiny-lr) to manage that in my server bootstrap script, rather than a grunt task.
@@ -71,6 +73,7 @@ Type: `String`
 Default: null
 
 This option allows you to specify a path to a Node.js module that exports a "connect-like" object. Such object should have the following two functions:
+
 1. `use(route, fn)` (https://github.com/senchalabs/connect/blob/master/lib/proto.js#L62)
 2. `listen()` (https://github.com/senchalabs/connect/blob/master/lib/proto.js#L227)
 _note: you DO NOT want to call the listen() from within your server module, `express` task will take care of that for you_
