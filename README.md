@@ -7,6 +7,10 @@ This plugin is largely based on grunt-contrib-connect. It aims to solve the foll
 2. Watch for changes to the server script(s) and restart the express/connect server (https://github.com/yeoman/express-stack/issues/7)
 
 
+## Sample app
+[grunt-express-example](https://github.com/blai/grunt-express-example) is a minimal example that shows how you can use `grunt-express` to run a basic express/socket.io server set. It will auto-restart server when change is detected.
+
+
 ## Philosophy
 The philosophy behind the birth of this mutant of grunt-contrib-connect is:
 
@@ -237,5 +241,6 @@ module.exports = app;
 
 ## Release History
 
+ * 2013-02-24   v0.1.1   Added missing "connect" dependency, factored out some logic to util.js.
  * 2013-02-23   v0.1.0   first draft.
 
