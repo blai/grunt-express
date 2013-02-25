@@ -64,6 +64,22 @@ Default: `'.'`
 
 The bases (or root) directories from which files will be served. Defaults to the project Gruntfile's directory.
 
+### supervisor
+Type: `Boolean|Object`
+Default: `false`
+
+Watch for changes and restart the express|connect server. Internally it uses [node-supervisor](https://github.com/isaacs/node-supervisor) to launch the server in a "supervised" child process. By default this is `false` so the express|connect will be started as part of the grunt process. You may simple set this to `true` to start "supervising" your express|connect server using the following default options(mostly inherited from `node-supervisor`):
+```javascript
+supervisor: {
+  watch: '.',  // map to '--watch' option, Type: String|Array
+  ignore: null,  //map to '--ignore' option, Type: String|Array
+  pollInterval: 100,  //map to '--poll-interval' option, Type: number
+  extensions: 'node|js', //map to '--extensions' option, Type: String
+  noRestartOn: 'error'  //map to '--no-restart-on' option: 'error'|'exit'
+}
+```
+If you prefer to roll your own configurations, you may stuff an object instead of just a Boolean `true` for this option. The `--debug` option of supervisor is mapped to the [`debug`](#debug) option of grunt-express.
+
 #### keepalive
 Type: `Boolean`
 Default: `false`
@@ -71,6 +87,12 @@ Default: `false`
 Keep the server alive indefinitely. Note that if this option is enabled, any tasks specified after this task will _never run_. By default, once grunt's tasks have completed, the web server stops. This option changes that behavior.
 
 This option can also be enabled ad-hoc by running the task like `grunt connect:targetname:keepalive`
+
+### debug
+Type: `Boolean`
+Default: `false`
+
+Turning this option on will make the "supervised" express|connect instance output more debugging messages.
 
 #### server
 Type: `String`
@@ -208,7 +230,7 @@ grunt.initConfig({
     custom: {
       port: 9001,
       bases: 'www-root',
-      keepalive: true,
+      supervisor: true,
       watchChanges: true,
       server: path.resolve('./server/main')
     }

@@ -17,7 +17,15 @@ module.exports = function(grunt) {
 			hostname: 'localhost',
 			bases: '.', // string|array of each static folders
 			keepalive: false,
-			watchChanges: false,
+			supervisor: false,
+			// supervisor: {
+			// watch: ['.'],
+			// ignore: null,
+			// pollInterval: null,
+			// extensions: null,
+			// noRestartOn: 'error'
+			// },
+			debug: false,
 			server: null
 			// (optional) filepath that points to a module that exports a 'server' object that provides
 			// 1. a 'listen' function act like http.Server.listen (which connect.listen does)
@@ -27,9 +35,12 @@ module.exports = function(grunt) {
 		options.keepalive = this.flags.keepalive || options.keepalive;
 		options.debug = grunt.option('debug') || options.debug;
 			
-		if (options.watchChanges) {
-			delete options.watchChanges;
+		if (options.supervisor) {
 			var args = [];
+			
+			util.parseSupervisorOpt(options.supervisor, args);
+			delete options.supervisor;
+
 			grunt.util._.each(options, function(value, key) {
 				if (grunt.util._.isArray(value)) {
 					value = value.join(',');
@@ -42,6 +53,8 @@ module.exports = function(grunt) {
 			args = ['--', process.argv[1], '_express_'].concat(args);
 			if (!options.debug) {
 				args.unshift('--quiet');
+			} else {
+				args.unshift('--debug');
 			}
 			supervisor.run(args);
 		} else {

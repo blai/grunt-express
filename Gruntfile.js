@@ -47,10 +47,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
   grunt.loadNpmTasks('grunt-contrib-internal');
 
-  grunt.registerTask('a', function() {
-    this.async();
-  });
-
   grunt.registerTask('test', ['express', 'nodeunit']);
   grunt.registerTask('default', ['jshint', 'test']);
 };
