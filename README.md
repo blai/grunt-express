@@ -262,8 +262,7 @@ module.exports = app;
 
 
 ## Release History
-
- * 2013-02-25   v0.1.2   Fixes #1, changing option "watchChanges" to "supervisor".
+ * 2013-02-25   v0.1.3   Fixes #1, changing option "watchChanges" to "supervisor".
  * 2013-02-24   v0.1.1   Added missing "connect" dependency, factored out some logic to util.js.
  * 2013-02-23   v0.1.0   first draft.
 
