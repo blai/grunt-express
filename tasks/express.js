@@ -41,6 +41,8 @@ module.exports = function(grunt) {
 			util.parseSupervisorOpt(options.supervisor, args);
 			delete options.supervisor;
 
+			args = args.concat(['--', process.argv[1], '_express_']);
+
 			grunt.util._.each(options, function(value, key) {
 				if (grunt.util._.isArray(value)) {
 					value = value.join(',');
@@ -50,7 +52,6 @@ module.exports = function(grunt) {
 				args = args.concat('--' + key, value);
 			});
 
-			args = ['--', process.argv[1], '_express_'].concat(args);
 			if (!options.debug) {
 				args.unshift('--quiet');
 			} else {
