@@ -7,24 +7,34 @@ module.exports = function(grunt) {
 	// Nodejs libs.
 
 	// External libs.
+	var forever = require('forever-monitor');
 	var nopt = require('nopt');
-	var supervisor = require('supervisor');
+	// var supervisor = require('supervisor');
+
+	var servers = {};
+    
+    // make sure all server are taken down when grunt exits.
+    process.on('exit', function() {
+		grunt.util._.each(servers, function(child) {
+			if (child.running) {
+				child.child.kill();
+			}
+		});
+	});
 
 	grunt.registerMultiTask('express', 'Start an express web server.', function() {
+		var child;
+
+		if (child = servers[this.target] && child.running) {
+			child.stop();
+		}
+
 		// Merge task-specific options with these defaults.
 		var options = this.options({
 			port: 3000,
 			hostname: 'localhost',
 			bases: '.', // string|array of each static folders
-			keepalive: false,
-			supervisor: false,
-			// supervisor: {
-			// watch: ['.'],
-			// ignore: null,
-			// pollInterval: null,
-			// extensions: null,
-			// noRestartOn: 'error'
-			// },
+			monitor: null,
 			debug: false,
 			server: null
 			// (optional) filepath that points to a module that exports a 'server' object that provides
@@ -32,38 +42,31 @@ module.exports = function(grunt) {
 			// 2. a 'use' function act like connect.use
 		});
 
-		options.keepalive = this.flags.keepalive || options.keepalive;
 		options.debug = grunt.option('debug') || options.debug;
-			
-		if (options.supervisor) {
-			var args = [];
-			
-			util.parseSupervisorOpt(options.supervisor, args);
-			delete options.supervisor;
+        if (grunt.util._.isArray(options.bases)) {
+            options.bases = options.bases.join(',');
+        }
 
-			args = args.concat(['--', process.argv[1], '_express_']);
+        var args = [process.argv[0], process.argv[1], 'express-start'];
 
-			grunt.util._.each(options, function(value, key) {
-				if (grunt.util._.isArray(value)) {
-					value = value.join(',');
-				} else {
-					value = String(value);
-				}
-				args = args.concat('--' + key, value);
-			});
+        grunt.util._.each(grunt.util._.omit(options, 'monitor'), function(value, key) {
+            if (value !== null) {
+                args.push('--' + key, value);
+            }
+        });
 
-			if (!options.debug) {
-				args.unshift('--quiet');
-			} else {
-				args.unshift('--debug');
+        servers[this.target] = child = forever.start(args, grunt.util._.isObject(options.monitor) ? options.monitor : {});
+
+        var done = this.async();
+        // wait for server to startup before declaring 'done'
+        child.child.stdout.on('data', function(data) {
+			if (new RegExp('\\[pid: ' + child.child.pid + '\\][\\n\\r]*$').test(data.toString())) {
+				done();
 			}
-			supervisor.run(args);
-		} else {
-			util.runServer(grunt, options, this.async);
-		}
+        });
 	});
 
-	grunt.registerTask('_express_', 'Child process to start a connect server', function() {
+	grunt.registerTask('express-start', 'Child process to start a connect server', function() {
 		util.watchActiveModules(function(oldStat, newStat) {
 			if (newStat.mtime.getTime() !== oldStat.mtime.getTime()) {
 				process.exit(0);
@@ -74,18 +77,51 @@ module.exports = function(grunt) {
 			port: Number,
 			hostname: String,
 			bases: String,
-			keepalive: Boolean,
 			debug: Boolean,
 			server: [String, null]
 		}, {
 			port: ['--port'],
 			hostname: ['--hostname'],
 			bases: ['--bases'],
-			keepalive: ['--keepalive'],
 			debug: ['--debug'],
 			server: ['--server']
 		}, process.argv, 3);
 
-		util.runServer(grunt, options, this.async);
+		util.runServer(grunt, options);
+		this.async();
+	});
+
+	grunt.registerTask('express-stop', 'Stop a running express server', function() {
+		if (this.args.length === 0) {
+			this.args = Object.keys(servers);
+		}
+
+		grunt.util._.each(this.args, function (target) {
+			var child = servers[target];
+			if (child.running) {
+				child.stop();
+			}
+		});
+	});
+
+	grunt.registerTask('express-restart', 'Restart a running express server', function() {
+		if (this.args.length === 0) {
+			this.args = Object.keys(servers);
+		}
+
+		grunt.util._.each(this.args, function (target) {
+			var child = servers[target];
+			if (!child) {
+				grunt.fatal('Server has not been started yet.');
+			} else if (child.running) {
+				child.restart();
+			} else {
+				child.start();
+			}
+		});
+	});
+
+	grunt.registerTask('express-keepalive', 'And async task to keep express server alive', function() {
+		this.async();
 	});
 };

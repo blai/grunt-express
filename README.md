@@ -36,15 +36,49 @@ grunt.loadNpmTasks('grunt-express');
 ```
 
 
-
-
 ## Express task
+
+### express (main task, Multi Tasks)
 _Run this task with the `grunt express` command._
 
-Note that this server only runs as long as grunt is running. Once grunt's tasks have completed, the web server stops. This behavior can be changed with the [keepalive](#keepalive) option, and can be enabled ad-hoc by running the task like `grunt connect:keepalive`.
+Configure one or more servers for grunt to start, the minimal config would be:
 
-This task was designed to be used in conjunction with another task that is run immediately afterwards, like the [grunt-contrib-qunit plugin](https://github.com/gruntjs/grunt-contrib-qunit) `qunit` task.
-### Options
+```javascript
+  grunt.initConfig({
+    express: {
+      default_option: {}
+    }
+  });
+
+  grunt.loadNpmTasks('grunt-express');
+
+  grunt.registerTask('default', ['express']);
+```
+
+### express-stop
+
+You may use this to stop one (or all) of the servers you have specified in `express` main task. If you do `grunt.task.run('express-stop')`, it will go ahead and stop all servers started by `express` multi task. You may also stop a particular server using `grunt.task.run('express-stop:SERVER_NAME')`
+
+### express-restart
+
+Similar to `express-stop`, except that your server will be started again after stopping.
+
+### express-keepalive
+
+Note that this server only runs as long as grunt is running. Once grunt's tasks have completed, the web server stops. This behavior can be changed by appending a `express-keepalive` task at the end of your task list like so
+
+```javascript
+grunt.registerTask('myServer', ['express', 'express-keepalive']);
+```
+Now when you run `grunt myServer`, your express server will be kept alive until you manually terminate it.
+
+ Such feature can also be enabled ad-hoc by running the task like `grunt express express-keepalive`.
+
+This design gives you the flexibility to use `grunt-express` in conjunction with another task that is run immediately afterwards, like the [grunt-contrib-qunit plugin](https://github.com/gruntjs/grunt-contrib-qunit) `qunit` task. If we force `express` task to be always async, such use case can no longer happen.
+
+
+
+## Options
 
 #### port
 Type: `Integer`
@@ -64,23 +98,14 @@ Default: `'.'`
 
 The bases (or root) directories from which files will be served. Defaults to the project Gruntfile's directory.
 
-### supervisor
-Type: `Boolean|Object`
-Default: `false`
+#### monitor
+Type: `Object`
+Default: `null`
 
-Watch for changes and restart the express|connect server. Internally it uses [node-supervisor](https://github.com/isaacs/node-supervisor) to launch the server in a "supervised" child process. By default this is `false` so the express|connect will be started as part of the grunt process. You may simple set this to `true` to start "supervising" your express|connect server using the following default options(mostly inherited from `node-supervisor`):
-```javascript
-supervisor: {
-  watch: '.',  // map to '--watch' option, Type: String|Array
-  ignore: null,  //map to '--ignore' option, Type: String|Array
-  pollInterval: 100,  //map to '--poll-interval' option, Type: number
-  extensions: 'node|js', //map to '--extensions' option, Type: String
-  noRestartOn: 'error'  //map to '--no-restart-on' option: 'error'|'exit'
-}
-```
-If you prefer to roll your own configurations, you may stuff an object instead of just a Boolean `true` for this option. The `--debug` option of supervisor is mapped to the [`debug`](#debug) option of grunt-express.
+Under the hood `grunt-express` uses [forever-monitor](https://github.com/nodejitsu/forever-monitor) to manage individual servers in separate child processes. This makes restarting the server automatically possible. This property allow you to pass in the `forever-monitor` options. When specified, the object will be used as the options hash when creating the forever monitor to manage the server in child process.
 
-#### keepalive
+#### keepalive (WARN: no longer availabe in 0.20+)
+#### Please use a trailing `express-keepalive` task instead
 Type: `Boolean`
 Default: `false`
 
@@ -262,6 +287,7 @@ module.exports = app;
 
 
 ## Release History
+ * 2013-02-28   v0.2.0   Switch to use forever-monitor (instead of node-supervisor). Removed "keepalive" option, instead enable the feature using "express-keepalive" task.
  * 2013-02-25   v0.1.3   Fixes #1, changing option "watchChanges" to "supervisor".
  * 2013-02-24   v0.1.1   Added missing "connect" dependency, factored out some logic to util.js.
  * 2013-02-23   v0.1.0   first draft.
