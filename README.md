@@ -111,9 +111,7 @@ Default: `false`
 
 Keep the server alive indefinitely. Note that if this option is enabled, any tasks specified after this task will _never run_. By default, once grunt's tasks have completed, the web server stops. This option changes that behavior.
 
-This option can also be enabled ad-hoc by running the task like `grunt connect:targetname:keepalive`
-
-### debug
+#### debug
 Type: `Boolean`
 Default: `false`
 
@@ -184,7 +182,7 @@ In this example, `grunt express` (or more verbosely, `grunt express:server`) wil
 ```javascript
 // Project configuration.
 grunt.initConfig({
-  connect: {
+  express: {
     server: {
       options: {
         port: 9001,
@@ -200,7 +198,7 @@ You may specify more than one `bases` like so. Enhancing the above example, now 
 ```javascript
 // Project configuration.
 grunt.initConfig({
-  connect: {
+  express: {
     server: {
       options: {
         port: 9001,
@@ -228,7 +226,7 @@ You can specify multiple servers to be run alone or simultaneously by creating a
 ```javascript
 // Project configuration.
 grunt.initConfig({
-  connect: {
+  express: {
     site1: {
       options: {
         port: 9000,
