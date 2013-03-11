@@ -287,6 +287,7 @@ module.exports = app;
 
 
 ## Release History
+ * 2013-03-11   v0.2.1   Make static directories not browsable as it breaks twitter bootstrap (suggested by @hmalphettes)
  * 2013-02-28   v0.2.0   Switch to use forever-monitor (instead of node-supervisor). Removed "keepalive" option, instead enable the feature using "express-keepalive" task.
  * 2013-02-25   v0.1.3   Fixes #1, changing option "watchChanges" to "supervisor".
  * 2013-02-24   v0.1.1   Added missing "connect" dependency, factored out some logic to util.js.
