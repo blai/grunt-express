@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 	// var supervisor = require('supervisor');
 
 	var servers = {};
-    
+
     // make sure all server are taken down when grunt exits.
     process.on('exit', function() {
 		grunt.util._.each(servers, function(child) {
@@ -23,16 +23,16 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerMultiTask('express', 'Start an express web server.', function() {
-		var child;
+		var child = servers[this.target];
 
-		if (child = servers[this.target] && child.running) {
+		if (child && child.running) {
 			child.stop();
 		}
 
 		// Merge task-specific options with these defaults.
 		var options = this.options({
 			port: 3000,
-			hostname: 'localhost',
+			// hostname: 'localhost',
 			bases: '.', // string|array of each static folders
 			monitor: null,
 			debug: false,
