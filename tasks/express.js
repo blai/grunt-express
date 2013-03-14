@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 		// Merge task-specific options with these defaults.
 		var options = this.options({
 			port: 3000,
-			hostname: 'localhost',
+			// hostname: 'localhost',
 			bases: '.', // string|array of each static folders
 			monitor: null,
 			debug: false,
