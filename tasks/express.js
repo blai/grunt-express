@@ -23,12 +23,7 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerMultiTask('express', 'Start an express web server.', function() {
-		var child = servers[this.target];
-
-		if (child && child.running) {
-			child.stop();
-		}
-
+	
 		// Merge task-specific options with these defaults.
 		var options = this.options({
 			port: 3000,
@@ -42,33 +37,45 @@ module.exports = function(grunt) {
 			// 1. a 'listen' function act like http.Server.listen (which connect.listen does)
 			// 2. a 'use' function act like connect.use
 		});
+	
+		if (options.nospawn) {
+				util.runServer(grunt, options);
+				this.async();
+		}
+		else {	
+			var child = servers[this.target];
 
-		options.debug = grunt.option('debug') || options.debug;
-        if (grunt.util._.isArray(options.bases)) {
-            options.bases = options.bases.join(',');
-        }
-
-        var args = [process.argv[0], process.argv[1], 'express-start'];
-
-        if (options['debug-brk']) {
-			args[0] =  args[0] + ' --debug-brk=' + options['debug-brk'];
-        }
-
-        grunt.util._.each(grunt.util._.omit(options, 'monitor'), function(value, key) {
-            if (value !== null) {
-                args.push('--' + key, value);
-            }
-        });
-
-        servers[this.target] = child = forever.start(args, grunt.util._.isObject(options.monitor) ? options.monitor : {});
-
-        var done = this.async();
-        // wait for server to startup before declaring 'done'
-        child.child.stdout.on('data', function(data) {
-			if (new RegExp('\\[pid: ' + child.child.pid + '\\][\\n\\r]*$').test(data.toString())) {
-				done();
+			if (child && child.running) {
+				child.stop();
 			}
-        });
+
+			options.debug = grunt.option('debug') || options.debug;
+			if (grunt.util._.isArray(options.bases)) {
+				options.bases = options.bases.join(',');
+			}
+
+			var args = [process.argv[0], process.argv[1], 'express-start'];
+
+			if (options['debug-brk']) {
+				args[0] =  args[0] + ' --debug-brk=' + options['debug-brk'];
+			}
+
+			grunt.util._.each(grunt.util._.omit(options, 'monitor'), function(value, key) {
+				if (value !== null) {
+					args.push('--' + key, value);
+				}
+			});
+
+			servers[this.target] = child = forever.start(args, grunt.util._.isObject(options.monitor) ? options.monitor : {});
+
+			var done = this.async();
+			// wait for server to startup before declaring 'done'
+			child.child.stdout.on('data', function(data) {
+				if (new RegExp('\\[pid: ' + child.child.pid + '\\][\\n\\r]*$').test(data.toString())) {
+					done();
+				}
+			});
+		}
 	});
 
 	grunt.registerTask('express-start', 'Child process to start a connect server', function() {
