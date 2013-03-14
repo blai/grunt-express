@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 	// var supervisor = require('supervisor');
 
 	var servers = {};
-
+    
     // make sure all server are taken down when grunt exits.
     process.on('exit', function() {
 		grunt.util._.each(servers, function(child) {
@@ -32,11 +32,12 @@ module.exports = function(grunt) {
 		// Merge task-specific options with these defaults.
 		var options = this.options({
 			port: 3000,
-			// hostname: 'localhost',
+			hostname: 'localhost',
 			bases: '.', // string|array of each static folders
 			monitor: null,
 			debug: false,
-			server: null
+			server: null,
+			// 'debug-brk': 49999
 			// (optional) filepath that points to a module that exports a 'server' object that provides
 			// 1. a 'listen' function act like http.Server.listen (which connect.listen does)
 			// 2. a 'use' function act like connect.use
@@ -48,6 +49,10 @@ module.exports = function(grunt) {
         }
 
         var args = [process.argv[0], process.argv[1], 'express-start'];
+
+        if (options['debug-brk']) {
+			args[0] =  args[0] + ' --debug-brk=' + options['debug-brk'];
+        }
 
         grunt.util._.each(grunt.util._.omit(options, 'monitor'), function(value, key) {
             if (value !== null) {
