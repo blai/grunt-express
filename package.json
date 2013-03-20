@@ -28,7 +28,7 @@
   "dependencies": {
     "connect": "~2.7.3",
     "nopt": "~2.1.1",
-    "forever-monitor": "git://github.com/nodejitsu/forever-monitor.git"
+    "forever-monitor": "https://github.com/nodejitsu/forever-monitor.git"
   },
   "devDependencies": {
     "grunt-contrib-jshint": "~0.2.0",
