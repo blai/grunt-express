@@ -285,6 +285,7 @@ module.exports = app;
 
 
 ## Release History
+ * 2013-03-24   v0.3.2   fixed npm v1.2.15 compatibility issue
  * 2013-03-14   v0.3.0   support 'debug-brk' option for launching server in child process (so it can be linked to a remote debugger); also point forever-monitor dependency to its github verion (has fix for accepting 'debug-brk' options)
  * 2013-03-13   v0.2.2   do not defalt hostname to "localhost" when none is provided as that will prevent access to the server through IP addres
  * 2013-03-11   v0.2.1   Make static directories not browsable as it breaks twitter bootstrap (suggested by @hmalphettes)
