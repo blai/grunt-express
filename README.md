@@ -251,11 +251,11 @@ Like the [Basic Use](#basic-use) example, this example will start a static web s
 grunt.initConfig({
   express: {
     custom: {
-      port: 9001,
-      bases: 'www-root',
-      supervisor: true,
-      watchChanges: true,
-      server: path.resolve('./server/main')
+      options: {
+        port: 9001,
+        bases: 'www-root',
+        server: path.resolve('./server/main')
+      }
     }
   }
 });
