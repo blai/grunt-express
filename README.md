@@ -285,12 +285,13 @@ module.exports = app;
 
 
 ## Release History
- * 2013-03-24   v0.3.2   fixed npm v1.2.15 compatibility issue
- * 2013-03-14   v0.3.0   support 'debug-brk' option for launching server in child process (so it can be linked to a remote debugger); also point forever-monitor dependency to its github verion (has fix for accepting 'debug-brk' options)
- * 2013-03-13   v0.2.2   do not defalt hostname to "localhost" when none is provided as that will prevent access to the server through IP addres
- * 2013-03-11   v0.2.1   Make static directories not browsable as it breaks twitter bootstrap (suggested by @hmalphettes)
- * 2013-02-28   v0.2.0   Switch to use forever-monitor (instead of node-supervisor). Removed "keepalive" option, instead enable the feature using "express-keepalive" task.
- * 2013-02-25   v0.1.3   Fixes #1, changing option "watchChanges" to "supervisor".
- * 2013-02-24   v0.1.1   Added missing "connect" dependency, factored out some logic to util.js.
- * 2013-02-23   v0.1.0   first draft.
+ * 2013-04-25 `v0.3.3` use forever-monitor npm v1.2.1
+ * 2013-03-24 `v0.3.2` fixed npm v1.2.15 compatibility issue
+ * 2013-03-14 `v0.3.0` support 'debug-brk' option for launching server in child process (so it can be linked to a remote debugger); also point forever-monitor dependency to its github verion (has fix for accepting 'debug-brk' options)
+ * 2013-03-13 `v0.2.2` do not defalt hostname to "localhost" when none is provided as that will prevent access to the server through IP addres
+ * 2013-03-11 `v0.2.1` Make static directories not browsable as it breaks twitter bootstrap (suggested by @hmalphettes)
+ * 2013-02-28 `v0.2.0` Switch to use forever-monitor (instead of node-supervisor). Removed "keepalive" option, instead enable the feature using "express-keepalive" task.
+ * 2013-02-25 `v0.1.3` Fixes #1, changing option "watchChanges" to "supervisor".
+ * 2013-02-24 `v0.1.1` Added missing "connect" dependency, factored out some logic to util.js.
+ * 2013-02-23 `v0.1.0` first draft.
 
