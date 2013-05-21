@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 	// var supervisor = require('supervisor');
 
 	var servers = {};
-    
+
     // make sure all server are taken down when grunt exits.
     process.on('exit', function() {
 		grunt.util._.each(servers, function(child) {
@@ -124,6 +124,7 @@ module.exports = function(grunt) {
 				child.start();
 			}
 		});
+		this.async();
 	});
 
 	grunt.registerTask('express-keepalive', 'And async task to keep express server alive', function() {
