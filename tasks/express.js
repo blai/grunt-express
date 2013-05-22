@@ -2,6 +2,14 @@
 
 var util = require('../lib/util');
 
+function monitorChildProcess(child, callback) {
+	child.child.stdout.on('data', function(data) {
+		if (new RegExp('\\[pid: ' + child.child.pid + '\\][\\n\\r]*$').test(data.toString())) {
+			callback();
+		}
+	});
+}
+
 module.exports = function(grunt) {
 
 	// Nodejs libs.
@@ -13,8 +21,8 @@ module.exports = function(grunt) {
 
 	var servers = {};
 
-    // make sure all server are taken down when grunt exits.
-    process.on('exit', function() {
+	// make sure all server are taken down when grunt exits.
+	process.on('exit', function() {
 		grunt.util._.each(servers, function(child) {
 			if (child.running) {
 				child.child.kill();
@@ -44,31 +52,26 @@ module.exports = function(grunt) {
 		});
 
 		options.debug = grunt.option('debug') || options.debug;
-        if (grunt.util._.isArray(options.bases)) {
-            options.bases = options.bases.join(',');
-        }
+		if (grunt.util._.isArray(options.bases)) {
+			options.bases = options.bases.join(',');
+		}
 
-        var args = [process.argv[0], process.argv[1], 'express-start'];
+		var args = [process.argv[0], process.argv[1], 'express-start'];
 
-        if (options['debug-brk']) {
-			args[0] =  args[0] + ' --debug-brk=' + options['debug-brk'];
-        }
+		if (options['debug-brk']) {
+			args[0] = args[0] + ' --debug-brk=' + options['debug-brk'];
+		}
 
-        grunt.util._.each(grunt.util._.omit(options, 'monitor'), function(value, key) {
-            if (value !== null) {
-                args.push('--' + key, value);
-            }
-        });
-
-        servers[this.target] = child = forever.start(args, grunt.util._.isObject(options.monitor) ? options.monitor : {});
-
-        var done = this.async();
-        // wait for server to startup before declaring 'done'
-        child.child.stdout.on('data', function(data) {
-			if (new RegExp('\\[pid: ' + child.child.pid + '\\][\\n\\r]*$').test(data.toString())) {
-				done();
+		grunt.util._.each(grunt.util._.omit(options, 'monitor'), function(value, key) {
+			if (value !== null) {
+				args.push('--' + key, value);
 			}
-        });
+		});
+
+		servers[this.target] = child = forever.start(args, grunt.util._.isObject(options.monitor) ? options.monitor : {});
+
+		// wait for server to startup before declaring 'done'
+		monitorChildProcess(child, this.async());
 	});
 
 	grunt.registerTask('express-start', 'Child process to start a connect server', function() {
@@ -101,7 +104,7 @@ module.exports = function(grunt) {
 			this.args = Object.keys(servers);
 		}
 
-		grunt.util._.each(this.args, function (target) {
+		grunt.util._.each(this.args, function(target) {
 			var child = servers[target];
 			if (child.running) {
 				child.stop();
@@ -114,17 +117,20 @@ module.exports = function(grunt) {
 			this.args = Object.keys(servers);
 		}
 
-		grunt.util._.each(this.args, function (target) {
+		grunt.util.async.each(this.args, function(target, callback) {
 			var child = servers[target];
 			if (!child) {
 				grunt.fatal('Server has not been started yet.');
-			} else if (child.running) {
-				child.restart();
 			} else {
-				child.start();
+				if (child.running) {
+					child.restart();
+				} else {
+					child.start();
+				}
+
+				monitorChildProcess(child, callback);
 			}
-		});
-		this.async();
+		}, this.async());
 	});
 
 	grunt.registerTask('express-keepalive', 'And async task to keep express server alive', function() {
