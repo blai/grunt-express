@@ -17,7 +17,7 @@ v1.0 is nearly a complete re-done, it acts as a higher-level grunt task that dep
 
 
 ## Sample app
-[grunt-express-example](https://github.com/blai/grunt-express-angular-example) is a minimal example that shows how you can use `grunt-express` to run a basic `express` server that hosts an Angular app, it is based on @bford's Yeoman generator `generator-angular`.
+[grunt-express-angular-example](https://github.com/blai/grunt-express-angular-example) is a minimal example that shows how you can use `grunt-express` to run a basic `express` server that hosts an Angular app, it is based on @bford's Yeoman generator `generator-angular`.
 
 
 
@@ -168,7 +168,7 @@ Default: `false`
 
 This options allows you to define the livereload port (or if you set it to `true`, it will use the default livereload port: `35729`), and when you also define `bases` options, then the livereload server will be watching all contents under your `bases` folder, and perform livereload when those contents change.
 
-When livereload is set, a [connect-livereload(https://github.com/intesso/connect-livereload)] middleware will be inserted at the top of your server's middleware stack (so you don't have to do the extra step as intructed by [grunt-contrib-connnect's documentation(https://github.com/gruntjs/grunt-contrib-watch#enabling-live-reload-in-your-html)])
+When livereload is set, a [connect-livereload](https://github.com/intesso/connect-livereload) middleware will be inserted at the top of your server's middleware stack (so you don't have to do the extra step as intructed by [grunt-contrib-connnect's documentation](https://github.com/gruntjs/grunt-contrib-watch#enabling-live-reload-in-your-html))
 
 #### serverreload
 Type: `Boolean`
