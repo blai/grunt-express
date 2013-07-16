@@ -1,5 +1,9 @@
 'use strict';
 
+var path = require('path');
+var temp = require('temp');
+var _ = require('lodash');
+
 var util = require('../lib/util');
 
 function monitorChildProcess(child, callback) {
@@ -11,129 +15,102 @@ function monitorChildProcess(child, callback) {
 }
 
 module.exports = function(grunt) {
+  var DefaultLiveReloadPort = 35729;
+  var watchDir = temp.mkdirSync('express');
+  var serverMap = {};
 
-	// Nodejs libs.
+  if (!grunt.task._tasks['watch']) {
+    grunt.loadNpmTasks('grunt-contrib-watch');
+  }
 
-	// External libs.
-	var forever = require('forever-monitor');
-	var nopt = require('nopt');
-	// var supervisor = require('supervisor');
+  grunt.registerMultiTask('express', function() {
+    var thisTarget = this.target;
+    var options = this.options({
+      serverreload: false,
+      livereload: false
+    });
 
-	var servers = {};
+    serverMap[thisTarget] = options.serverKey = path.resolve(watchDir, thisTarget + '.server');
+    util.touchFile(options.serverKey);
 
-	// make sure all server are taken down when grunt exits.
-	process.on('exit', function() {
-		grunt.util._.each(servers, function(child) {
-			if (child.running) {
-				child.child.kill();
-			}
-		});
-	});
+    if (options.bases) {
+      if (!Array.isArray(options.bases)) {
+        options.bases = [options.bases];
+      }
 
-	grunt.registerMultiTask('express', 'Start an express web server.', function() {
-		var child = servers[this.target];
+      // wrap each path in connect.static middleware
+      options.bases =_.map(options.bases, function(b) {
+        return path.resolve(b);
+      });
+    }
 
-		if (child && child.running) {
-			child.stop();
-		}
+    if (options.livereload === true) {
+      options.livereload = DefaultLiveReloadPort;
+    }
+    if (options.livereload) {
+      // dynamically add `grunt-contrib-watch` task to manage livereload of static `bases`
+      grunt.config.set('watch.' + util.makeServerTaskName(thisTarget, 'livereload'), {
+        files: _.map(options.bases, function(base) {
+          return base + '/**/*.*';
+        }),
+        options: {
+          livereload: options.livereload
+        }
+      });
+    }
 
-		// Merge task-specific options with these defaults.
-		var options = this.options({
-			port: 3000,
-			// hostname: 'localhost',
-			bases: '.', // string|array of each static folders
-			monitor: null,
-			debug: false,
-			server: null,
-			// 'debug-brk': 49999
-			// (optional) filepath that points to a module that exports a 'server' object that provides
-			// 1. a 'listen' function act like http.Server.listen (which connect.listen does)
-			// 2. a 'use' function act like connect.use
-		});
+    if (options.serverreload) {
+      var watcherOptions = {
+        interrupt: true,
+        atBegin: true,
+        event: ['added', 'changed']
+      };
 
-		options.debug = grunt.option('debug') || options.debug;
-		if (grunt.util._.isArray(options.bases)) {
-			options.bases = options.bases.join(',');
-		}
+      var watching = 'undefined' !== typeof grunt.task._tasks.watch || 'undefined' !== typeof grunt.config.data.watch;
+      // make sure `grunt-contrib-watch` task is loaded
+      if (!watching) {
+        grunt.loadNpmTasks('grunt-contrib-watch');
+      }
 
-		var args = [process.argv[0], process.argv[1], 'express-start'];
+      // dynamically add `grunt-contrib-watch` task to manage `grunt-express` sub task
+      grunt.config.set('watch.' + util.makeServerTaskName(thisTarget, 'server'), {
+        files: options.serverKey,
+        tasks: ['express-server', thisTarget, options.serverKey].join(':'),
+        options: _.extend({}, options.watch, watcherOptions)
+      });
 
-		if (options['debug-brk']) {
-			args[0] = args[0] + ' --debug-brk=' + options['debug-brk'];
-		}
+      if (_.filter(grunt.task._queue, function(task) {
+        return !task.placeholder && task.task.name === 'watch';
+      }).length === 0) {
+        grunt.task.run('watch');
+      }
+    } else {
+      util.runServer(grunt, options);
+    }
+  });
 
-		grunt.util._.each(grunt.util._.omit(options, 'monitor'), function(value, key) {
-			if (value !== null) {
-				args.push('--' + key, value);
-			}
-		});
+  grunt.registerTask('express-start', 'Start the server (or restart if already started)', function(target) {
+    util.touchFile(serverMap[target]);
+  });
+  // alias, backward compatibility
+  grunt.registerTask('express-restart', 'Restart the server (or start if not already started)' ['express-start']);
 
-		servers[this.target] = child = forever.start(args, grunt.util._.isObject(options.monitor) ? options.monitor : {});
+  grunt.registerTask('express-server', function(target) {
+    var self = this;
+    var options = _.extend({}, grunt.config.get('express.options'), grunt.config.get('express.' + target + '.options'));
 
-		// wait for server to startup before declaring 'done'
-		monitorChildProcess(child, this.async());
-	});
+    util.watchModule(function(oldStat, newStat) {
+      if (newStat.mtime.getTime() !== oldStat.mtime.getTime()) {
+        util.touchFile(self.args[1]);
+      }
+    });
 
-	grunt.registerTask('express-start', 'Child process to start a connect server', function() {
-		util.watchActiveModules(function(oldStat, newStat) {
-			if (newStat.mtime.getTime() !== oldStat.mtime.getTime()) {
-				process.exit(0);
-			}
-		});
+    util.runServer(grunt, options);
 
-		var options = nopt({
-			port: Number,
-			hostname: String,
-			bases: String,
-			debug: Boolean,
-			server: [String, null]
-		}, {
-			port: ['--port'],
-			hostname: ['--hostname'],
-			bases: ['--bases'],
-			debug: ['--debug'],
-			server: ['--server']
-		}, process.argv, 3);
+    this.async();
+  });
 
-		util.runServer(grunt, options);
-		this.async();
-	});
-
-	grunt.registerTask('express-stop', 'Stop a running express server', function() {
-		if (this.args.length === 0) {
-			this.args = Object.keys(servers);
-		}
-
-		grunt.util._.each(this.args, function(target) {
-			var child = servers[target];
-			if (child.running) {
-				child.stop();
-			}
-		});
-	});
-
-	grunt.registerTask('express-restart', 'Restart a running express server', function() {
-		if (this.args.length === 0) {
-			this.args = Object.keys(servers);
-		}
-
-		grunt.util.async.each(this.args, function(target, callback) {
-			var child = servers[target];
-			if (!child) {
-				grunt.fatal('Server has not been started yet.');
-			} else {
-				if (child.running) {
-					child.restart();
-				} else {
-					child.start();
-				}
-
-				monitorChildProcess(child, callback);
-			}
-		}, this.async());
-	});
-
-	grunt.registerTask('express-keepalive', 'And async task to keep express server alive', function() {
-		this.async();
-	});
+  grunt.registerTask('express-keepalive', 'Keep grunt running', function() {
+    this.async();
+  });
 };

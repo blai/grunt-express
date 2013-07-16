@@ -1,23 +1,21 @@
 # grunt-express [![Build Status](https://secure.travis-ci.org/blai/grunt-express.png?branch=master)](http://travis-ci.org/blai/grunt-express)
 
-> Start an express/connect web server.
-This plugin is largely based on grunt-contrib-connect. It aims to solve the following use cases that grunt-contrib-connect does not seem to have an answer for:
+## grunt-express v1.0 beta
+v1.0 is nearly a complete re-done, it acts as a higher-level grunt task that depends on (and consumes) `grunt-contrib-watch`. It will dynamically configure `watch` tasks based on your `express` task setup at runtime, and it will run `watch` if necessary. Here's the list of high level changes
 
-1. Enabling custom express/connect server, especially in cases when socket.io is in the mix (https://github.com/yeoman/express-stack/issues/15#issuecomment-13217532)
-2. Watch for changes to the server script(s) and restart the express/connect server (https://github.com/yeoman/express-stack/issues/7)
+1. use `grunt-contrib-watch` to manage reloading express server, instead of `forever-monitor` 
+2. support both `livereload` and `serverreload`
+3. if `serverreload` is set to `false` in `options`, then the following are true:
+    * server will be started in the same process as your `grunt` (so developers can run debugger using Webstorm or other tools)
+    * server will be run WITHOUT the `this.async()` call (you can optionally append the task `express-keepalive` to keep the server running), this allows you to run tests using grunt-express
+4. if `serverreload` i
+4. continue to support `socket.io` + `express` use cases
+5. discontinue support of `express-stop`
 
 
 ## Sample app
-[grunt-express-example](https://github.com/blai/grunt-express-example) is a minimal example that shows how you can use `grunt-express` to run a basic express/socket.io server set. It will auto-restart server when change is detected.
+[grunt-express-example](https://github.com/blai/grunt-express-angular-example) is a minimal example that shows how you can use `grunt-express` to run a basic `express` server that hosts an Angular app, it is based on @bford's Yeoman generator `generator-angular`.
 
-
-## Philosophy
-The philosophy behind the birth of this mutant of grunt-contrib-connect is:
-
-1. Flexibility. I learned a few lessons from working on some enhancement to [Yeoman](http://yeoman.io)'s `server` task. Express.js and Connect are so flexible that the only way to accommodate their full flexibility seems to be accepting a custom module that actually exports such object. An extreme case of this comes from [Socket.io](http://socket.io/#how-to-use), which forces http.Server, express/connect, and socket.io be instanciate in a very specific way.
-2. Grunt/Yeoman is mainly for development/deployment. When rung web server in dev environment, following features are in high demand:
-  * auto-rebuild/auto-reload (both web browser and server), livereload solved only half of this demand. While it may not be common, livereload on the browser end is also a demand for production environment, so I prefer using [tiny-rl](https://github.com/mklabs/tiny-lr) to manage that in my server bootstrap script, rather than a grunt task.
-  * use different base directories where static contents are served. Since development/deployment process is managed by a set of grunt task (and some of the tasks are opinionated), it would seem logical to let grunt task decide which directories to load static contents from.
 
 
 ## Getting Started
@@ -55,24 +53,20 @@ Configure one or more servers for grunt to start, the minimal config would be:
   grunt.registerTask('default', ['express']);
 ```
 
-### express-stop
-
-You may use this to stop one (or all) of the servers you have specified in `express` main task. If you do `grunt.task.run('express-stop')`, it will go ahead and stop all servers started by `express` multi task. You may also stop a particular server using `grunt.task.run('express-stop:SERVER_NAME')`
-
 ### express-restart
 
 Similar to `express-stop`, except that your server will be started again after stopping.
 
 ### express-keepalive
 
-Note that this server only runs as long as grunt is running. Once grunt's tasks have completed, the web server stops. This behavior can be changed by appending a `express-keepalive` task at the end of your task list like so
+Note that when `serverreload` is false, this server only runs as long as grunt is running. Once grunt's tasks have completed, the web server stops. This behavior can be changed by appending a `express-keepalive` task at the end of your task list like so
 
 ```javascript
 grunt.registerTask('myServer', ['express', 'express-keepalive']);
 ```
 Now when you run `grunt myServer`, your express server will be kept alive until you manually terminate it.
 
- Such feature can also be enabled ad-hoc by running the task like `grunt express express-keepalive`.
+ Such feature can also be enabled ad-hoc by running the command like `grunt express express-keepalive`.
 
 This design gives you the flexibility to use `grunt-express` in conjunction with another task that is run immediately afterwards, like the [grunt-contrib-qunit plugin](https://github.com/gruntjs/grunt-contrib-qunit) `qunit` task. If we force `express` task to be always async, such use case can no longer happen.
 
@@ -90,15 +84,26 @@ The port on which the webserver will respond. The task will fail if the specifie
 Type: `String`
 Default: `'localhost'`
 
-The hostname the webserver will use.
+The hostname the webserver will use. If set to `'*'`, server could be accessed from ip (e.g. 127.0.0.1) as well as `localhost`
 
 #### bases
 Type: `String|Array`
-Default: `'.'`
+Default: `null`
 
-The bases (or root) directories from which files will be served. Defaults to the project Gruntfile's directory.
+The bases (or root) directories from which static files will be served. A `connect.static()` will be generated for each entry of `bases`. When `livereload` is set to `true` (or set to a specific port number), a `watch` task will be created for you (at runtime) to watch your `basePath/**/*.*`.
 
-#### monitor
+You may optionally define a placeholder middleware named `staticsPlaceholder` in your server's list of middlewares, and when one is defined, every `connect.static()` middleware generated from your `bases` will be inserted before your `staticsPlaceholder` middleware. If you do not define a `staticsPlaceholder`, your `connect.static()` will be appended at the end of the middleware stack.
+
+##### `staticsPlaceholder` example
+```js
+app.use(function staticsPlaceholder(req, res, next) {
+  return next();
+});
+```
+
+
+#### monitor (WARN: no longer availabe in 1.0+)
+#### Please use a trailing `serverreload` option instead
 Type: `Object`
 Default: `null`
 
@@ -111,6 +116,7 @@ Default: `false`
 
 Keep the server alive indefinitely. Note that if this option is enabled, any tasks specified after this task will _never run_. By default, once grunt's tasks have completed, the web server stops. This option changes that behavior.
 
+#### monitor (WARN: no longer availabe in 1.0+)
 #### debug
 Type: `Boolean`
 Default: `false`
@@ -173,6 +179,35 @@ _note: `express` task will generate `static` and `directory` middleware for each
 
 [project Gruntfile]: Gruntfile.js
 [project unit tests]: test/express_test.js
+
+#### livereload
+Type: `Boolean|Number`
+Default: `false`
+
+This options allows you to define the livereload port (or if you set it to `true`, it will use the default livereload port: `35729`), and when you also define `bases` options, then the livereload server will be watching all contents under your `bases` folder, and perform livereload when those contents change.
+
+When livereload is set, a [connect-livereload(https://github.com/intesso/connect-livereload)] middleware will be inserted at the top of your server's middleware stack (so you don't have to do the extra step as intructed by [grunt-contrib-connnect's documentation(https://github.com/gruntjs/grunt-contrib-watch#enabling-live-reload-in-your-html)])
+
+#### serverreload
+Type: `Boolean`
+Default: `false`
+
+Setting this option to `true` will tell `express` task to start a forever running server in a child process, and if any of your server scripts change, the server will be restarted (using a dynamically generated `watch` task)
+
+When this options is not set (or set to `false`), the server will be running in the same process as grunt, and will only live as long as the grunt process is running. You may optionally use `express-keepalive` task to keep it alive.
+
+#### middlewares (experimental)
+Type: `Array`
+Default: `null`
+
+Try to mimic `grunt-contrib-connect`'s `middleware` options (and should work the same way). Like `bases` options, you can control the insertion point of your `middlewares` by adding a `middlewarePlaceholder`, like so:
+
+```js
+app.use(function middlewarePlaceholder(req, res, next) {
+  return next();
+});
+```
+
 
 ### Usage examples
 
@@ -285,6 +320,7 @@ module.exports = app;
 
 
 ## Release History
+ * 2013-07-16 `v1.0.0-beta` use grunt-contrib-watch, support both serverreload and livereload
  * 2013-04-25 `v0.3.3` use forever-monitor npm v1.2.1
  * 2013-03-24 `v0.3.2` fixed npm v1.2.15 compatibility issue
  * 2013-03-14 `v0.3.0` support 'debug-brk' option for launching server in child process (so it can be linked to a remote debugger); also point forever-monitor dependency to its github verion (has fix for accepting 'debug-brk' options)
