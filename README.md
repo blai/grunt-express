@@ -12,6 +12,9 @@ v1.0 is nearly a complete re-done, it acts as a higher-level grunt task that dep
 4. continue to support `socket.io` + `express` use cases
 5. discontinue support of `express-stop`
 
+> I am in process to add more test cases to cover all use cases
+
+
 
 ## Sample app
 [grunt-express-example](https://github.com/blai/grunt-express-angular-example) is a minimal example that shows how you can use `grunt-express` to run a basic `express` server that hosts an Angular app, it is based on @bford's Yeoman generator `generator-angular`.
