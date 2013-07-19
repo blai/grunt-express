@@ -8,7 +8,6 @@ v1.0 is nearly a complete re-done, it acts as a higher-level grunt task that dep
 3. if `serverreload` is set to `false` in `options`, then the following are true:
     * server will be started in the same process as your `grunt` (so developers can run debugger using Webstorm or other tools)
     * server will be run WITHOUT the `this.async()` call (you can optionally append the task `express-keepalive` to keep the server running), this allows you to run tests using grunt-express
-4. if `serverreload` i
 4. continue to support `socket.io` + `express` use cases
 5. discontinue support of `express-stop`
 
@@ -310,6 +309,40 @@ grunt.initConfig({
     myLivereloadServer: {
       bases: path.resove(__dirname, 'public'),
       livereload: true
+    }
+  }
+});
+```
+The above example is equivalent to the following:
+
+```js
+var LIVERELOAD_PORT = 35729;
+var lrSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
+var mountFolder = function (connect, dir) {
+  return connect.static(require('path').resolve(dir));
+};
+
+grunt.initConfig({
+  watch: {
+    options: {
+      livereload: LIVERELOAD_PORT
+    },
+    files: [
+      path.resove(__dirname, 'public') + '/{,*/}*.*'
+    ]
+  },
+  connect: {
+    livereload: {
+      options: {
+        port: 3000,
+        middleware: function (connect) {
+          return [
+            lrSnippet,
+            mountFolder(connect, path.resove(__dirname, 'public')),
+            mountFolder(connect, yeomanConfig.app)
+          ];
+        }
+      }
     }
   }
 });
