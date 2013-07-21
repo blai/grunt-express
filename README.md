@@ -227,7 +227,7 @@ Turning this option on will make the "supervised" express|connect instance outpu
 ### Usage examples
 
 #### Basic Use
-In this example, `grunt express` (or more verbosely, `grunt express:server`) will start a static web server at `http://localhost:9001/`, with its base path set to the `www-root` directory relative to the gruntfile, and any tasks run afterwards will be able to access it.
+In this example, `grunt express` (or more verbosely, `grunt express:server`) will start a static web server at `http://localhost:9000/`, with its base path set to the `public` directory relative to the gruntfile, and any tasks run afterwards will be able to access it.
 
 ```javascript
 // Project configuration.
