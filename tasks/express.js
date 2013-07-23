@@ -99,6 +99,10 @@ module.exports = function(grunt) {
     var self = this;
     var options = _.extend({}, grunt.config.get('express.options'), grunt.config.get('express.' + target + '.options'));
 
+    if (options.livereload === true) {
+      options.livereload = DefaultLiveReloadPort;
+    }
+
     util.watchModule(function(oldStat, newStat) {
       if (newStat.mtime.getTime() !== oldStat.mtime.getTime()) {
         util.touchFile(self.args[1]);
