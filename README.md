@@ -189,11 +189,11 @@ var watcherOptions = {
 }
 ```
 
-#### middlewares (experimental)
+#### middleware (experimental)
 Type: `Array`
 Default: `null`
 
-Try to mimic `grunt-contrib-connect`'s `middleware` options (and should work the same way). Like `bases` options, you can control the insertion point of your `middlewares` by adding a `middlewarePlaceholder`, like so:
+Try to mimic `grunt-contrib-connect`'s `middleware` options (and should work the same way). Like `bases` options, you can control the insertion point of your `middleware` by adding a `middlewarePlaceholder`, like so:
 
 ```js
 app.use(function middlewarePlaceholder(req, res, next) {
