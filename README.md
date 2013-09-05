@@ -313,7 +313,7 @@ If all you have are the browser side static contents, you can omit the `server` 
 grunt.initConfig({
   express: {
     myLivereloadServer: {
-      bases: path.resove(__dirname, 'public'),
+      bases: path.resolve(__dirname, 'public'),
       livereload: true
     }
   }
@@ -334,7 +334,7 @@ grunt.initConfig({
       livereload: LIVERELOAD_PORT
     },
     files: [
-      path.resove(__dirname, 'public') + '/{,*/}*.*'
+      path.resolve(__dirname, 'public') + '/{,*/}*.*'
     ]
   },
   connect: {
@@ -344,7 +344,7 @@ grunt.initConfig({
         middleware: function (connect) {
           return [
             lrSnippet,
-            mountFolder(connect, path.resove(__dirname, 'public')),
+            mountFolder(connect, path.resolve(__dirname, 'public')),
             mountFolder(connect, yeomanConfig.app)
           ];
         }
@@ -383,7 +383,7 @@ app.use(express.logger('dev'));
 //    },
 //    productionServer: {
 //      server: path.resolve(__dirname, 'server'),
-//      bases: path.resove(__dirname, 'dist')
+//      bases: path.resolve(__dirname, 'dist')
 //    }
 //  }
 // });
