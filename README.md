@@ -176,6 +176,12 @@ Setting this option to `true` will tell `express` task to start a forever runnin
 
 When this options is not set (or set to `false`), the server will be running in the same process as grunt, and will only live as long as the grunt process is running. You may optionally use `express-keepalive` task to keep it alive.
 
+#### showStack
+Type: `Boolean`
+Default: `false`
+
+Setting this option to `true` will tell `express` task to show the full error stack, if an error occurs in your `express` server.
+
 #### watch (experimental)
 Type: `Object`
 
