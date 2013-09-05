@@ -4,7 +4,7 @@
 v1.0 is nearly a complete re-done, it acts as a higher-level grunt task that depends on (and consumes) `grunt-contrib-watch`. It will dynamically configure `watch` tasks based on your `express` task setup at runtime, and it will run `watch` if necessary. Here's the list of high level changes
 
 1. use `grunt-contrib-watch` to manage reloading express server, instead of `forever-monitor` 
-2. support both `livereload` and `serverreload` (pre-v1.0 users: `grunt-express` will no longer manage to restart your server by default, you would have to set `serverreload` to `ture` to regain the old behavior)
+2. support both `livereload` and `serverreload` (pre-v1.0 users: `grunt-express` will no longer manage to restart your server by default, you would have to set `serverreload` to `true` to regain the old behavior)
 3. if `serverreload` is set to `false` in `options`, then the following are true:
     * server will be started in the same process as your `grunt` (so developers can run debugger using Webstorm or other tools)
     * server will be run WITHOUT the `this.async()` call (you can optionally append the task `express-keepalive` to keep the server running), this allows you to run tests using grunt-express
@@ -293,7 +293,7 @@ grunt.initConfig({
   express: {
     livereloadServer: {
       server: path.resolve(__dirname, 'server'),
-      bases: path.resove(__dirname, 'public'),
+      bases: path.resolve(__dirname, 'public'),
       livereload: true, // if you just specify `true`, default port `35729` will be used
       serverreload: true
     }
@@ -301,7 +301,7 @@ grunt.initConfig({
 });
 ```
 
-If all you have are the browser side static contents, you can omit the `server` option (and of course, you would not set `serverreload` to `ture` in this case, although it would not hurt to set it):
+If all you have are the browser side static contents, you can omit the `server` option (and of course, you would not set `serverreload` to `true` in this case, although it would not hurt to set it):
 
 ```js
 grunt.initConfig({
