@@ -35,6 +35,7 @@ module.exports = function(grunt) {
 
     if (options.bases) {
       if (!Array.isArray(options.bases)) {
+        grunt.config.set('express.' + thisTarget + '.options.bases', [options.bases]);
         options.bases = [options.bases];
       }
 
@@ -75,7 +76,7 @@ module.exports = function(grunt) {
       // dynamically add `grunt-contrib-watch` task to manage `grunt-express` sub task
       grunt.config.set('watch.' + util.makeServerTaskName(thisTarget, 'server'), {
         files: options.serverKey,
-        tasks: ['express-server', thisTarget, options.serverKey].join(':'),
+        tasks: [['express-server', thisTarget, options.serverKey].join(':'), 'express-keepalive'],
         options: _.extend({}, options.watch, watcherOptions)
       });
 
@@ -85,7 +86,7 @@ module.exports = function(grunt) {
         grunt.task.run('watch');
       }
     } else {
-      util.runServer(grunt, options);
+      grunt.task.run(['express-server', thisTarget].join(':'));
     }
   });
 
@@ -98,7 +99,6 @@ module.exports = function(grunt) {
   grunt.registerTask('express-server', function(target) {
     var self = this;
     var options = _.extend({}, grunt.config.get('express.options'), grunt.config.get('express.' + target + '.options'));
-
     if (options.livereload === true) {
       options.livereload = DefaultLiveReloadPort;
     }
@@ -109,9 +109,16 @@ module.exports = function(grunt) {
       }
     });
 
-    util.runServer(grunt, options);
+    var done = this.async();
 
-    this.async();
+    util.runServer(grunt, options).on('startListening', function (server) {
+      var serverPort = server.address().port;
+      if (serverPort !== options.port) {
+        grunt.config.set('express.' + target + '.options.port', serverPort);
+      }
+      grunt.event.emit('express:' + target + ':started');
+      done();
+    });
   });
 
   grunt.registerTask('express-keepalive', 'Keep grunt running', function() {

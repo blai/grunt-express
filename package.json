@@ -39,7 +39,8 @@
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt": "~0.4.1",
     "matchdep": "~0.1.2",
-    "request": "~2.22.0"
+    "request": "~2.22.0",
+    "grunt-open": "https://github.com/blai/grunt-open/tarball/master"
   },
   "peerDependencies": {
     "grunt": "~0.4.0"
