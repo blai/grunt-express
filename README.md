@@ -358,7 +358,7 @@ grunt.initConfig({
 
 Noted that `grunt-exress` translates each of your static folders (defined as `bases` option) into an instance of express.static() middleware. And in the case of `livereload` is `true` (or a port number), `grunt-express` will also insert a [connect-livereload](https://github.com/intesso/connect-livereload) middleware for you. This is unlike `grunt-contrib-connect`, where you have to define your own middleware to do so (which has the up side of having full flexibility). Also noted that `grunt-express` will rearrange your middlewares (at runtime) to make sure `connect-livereload` is at the top of your server's middleware stack (like `connect-livereload`'s documentation has suggested).
 
-Starting v1.0, `grunt-express` also allow a dynamic list of middlewares to be passed in as option `middlewares`, this is to mimic the popular `grunt-contrib-connect` [middleware feature](https://github.com/gruntjs/grunt-contrib-connect#middleware). There are some limitations on enabling this, and may not be fully funtional in all cases.
+Starting v1.0, `grunt-express` also allow a dynamic list of middlewares to be passed in as option `middleware`, this is to mimic the popular `grunt-contrib-connect` [middleware feature](https://github.com/gruntjs/grunt-contrib-connect#middleware). There are some limitations on enabling this, and may not be fully funtional in all cases.
 
 Usually, we also want to control the order of loading express middlewares, because sometimes they would only function with a particular loading order. `grunt-express` tries to give you such freedom with the introduction of `placeholder` middleware. Let's see an example. Say, you have the following express script:
 
@@ -414,7 +414,7 @@ app.use(myOtherMiddlewares);
 
 
 #### Multiple Servers
-You can specify multiple servers to be run alone or simultaneously by creating a target for each server. In this example, running either `grunt connect:site1` or `grunt connect:site2` will  start the appropriate web server, but running `grunt connect` will run _both_. Note that any server for which the [keepalive](#keepalive) option is specified will prevent _any_ task or target from running after it.
+You can specify multiple servers to be run alone or simultaneously by creating a target for each server. In this example, running either `grunt express:site1` or `grunt express:site2` will  start the appropriate web server, but running `grunt connect` will run _both_. Note that any server for which the [keepalive](#keepalive) option is specified will prevent _any_ task or target from running after it.
 
 ```javascript
 // Project configuration.

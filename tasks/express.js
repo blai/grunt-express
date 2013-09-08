@@ -27,7 +27,8 @@ module.exports = function(grunt) {
     var thisTarget = this.target;
     var options = this.options({
       serverreload: false,
-      livereload: false
+      livereload: false,
+      open: false,
     });
 
     serverMap[thisTarget] = options.serverKey = path.resolve(watchDir, thisTarget + '.server');
@@ -103,15 +104,18 @@ module.exports = function(grunt) {
       options.livereload = DefaultLiveReloadPort;
     }
 
-    util.watchModule(function(oldStat, newStat) {
-      if (newStat.mtime.getTime() !== oldStat.mtime.getTime()) {
-        util.touchFile(self.args[1]);
-      }
-    });
+    if (options.serverreload) {
+      util.watchModule(function(oldStat, newStat) {
+        if (newStat.mtime.getTime() !== oldStat.mtime.getTime()) {
+          util.touchFile(self.args[1]);
+        }
+      });
+    }
 
     var done = this.async();
 
     util.runServer(grunt, options).on('startListening', function (server) {
+      console.log(server.Agent)
       var serverPort = server.address().port;
       if (serverPort !== options.port) {
         grunt.config.set('express.' + target + '.options.port', serverPort);
