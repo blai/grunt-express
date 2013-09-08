@@ -1,7 +1,7 @@
 {
   "name": "grunt-express",
   "description": "Start (and supervise) an Express.js web server using grunt.js, works well with socket.io",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "homepage": "https://github.com/blai/grunt-express",
   "author": {
     "name": "Brian Lai"
@@ -13,9 +13,11 @@
   "bugs": {
     "url": "https://github.com/blai/grunt-express/issues"
   },
-  "licenses": [{
-    "type": "MIT"
-  }],
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
   "main": "Gruntfile.js",
   "engines": {
     "node": ">= 0.8.0"
