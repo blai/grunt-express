@@ -95,7 +95,7 @@ module.exports = function(grunt) {
     util.touchFile(serverMap[target]);
   });
   // alias, backward compatibility
-  grunt.registerTask('express-restart', 'Restart the server (or start if not already started)' ['express-start']);
+  grunt.registerTask('express-restart', 'Restart the server (or start if not already started)', ['express-start']);
 
   grunt.registerTask('express-server', function(target) {
     var self = this;
