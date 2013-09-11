@@ -207,6 +207,12 @@ app.use(function middlewarePlaceholder(req, res, next) {
 });
 ```
 
+#### open (mimics [grunt-contrib-connect#open](https://github.com/gruntjs/grunt-contrib-connect#open))
+Type: `Boolean` or `String`
+Default: `false`
+
+Open the served page in your default browser. Specifying `true` opens the default server URL, while specifying a URL opens that URL.
+
 #### monitor (WARN: no longer availabe in 1.0+)
 #### Please use a trailing `serverreload` option instead
 Type: `Object`

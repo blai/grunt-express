@@ -123,6 +123,7 @@ module.exports = function(grunt) {
       }
 
       if (options.open === true) {
+        // https://github.com/joyent/node/blob/master/lib/_tls_wrap.js#L464
         var protocol = (!server.pfx && (!server.cert || !server.key)) ? 'http' : 'https';
         console.log(address)
         var hostname = address.address || 'localhost';
