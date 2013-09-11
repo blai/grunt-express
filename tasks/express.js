@@ -2,6 +2,7 @@
 
 var path = require('path');
 var temp = require('temp');
+var open = require('open');
 var _ = require('lodash');
 
 var util = require('../lib/util');
@@ -115,11 +116,24 @@ module.exports = function(grunt) {
     var done = this.async();
 
     util.runServer(grunt, options).on('startListening', function (server) {
-      console.log(server.Agent)
-      var serverPort = server.address().port;
+      var address = server.address();
+      var serverPort = address.port;
       if (serverPort !== options.port) {
         grunt.config.set('express.' + target + '.options.port', serverPort);
       }
+
+      if (options.open === true) {
+        var protocol = (!server.pfx && (!server.cert || !server.key)) ? 'http' : 'https';
+        console.log(address)
+        var hostname = address.address || 'localhost';
+        if (hostname === '0.0.0.0') {
+          hostname = 'localhost';
+        }
+        open(protocol + '://' + hostname + ':' + address.port);
+      } else if (typeof options.open === 'string') {
+        open(options.open);
+      }
+
       grunt.event.emit('express:' + target + ':started');
       done();
     });
