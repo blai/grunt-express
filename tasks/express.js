@@ -19,10 +19,20 @@ module.exports = function(grunt) {
   var DefaultLiveReloadPort = 35729;
   var watchDir = temp.mkdirSync('express');
   var serverMap = {};
+  var parentcwd = process.cwd();
+
+  // get npmTasks from grunt-express, not the parent Gruntfile
+  process.chdir(path.join(__dirname, '../'));
 
   if (!grunt.task._tasks['watch']) {
     grunt.loadNpmTasks('grunt-contrib-watch');
   }
+
+  if (!grunt.task._tasks['parallel']) {
+    grunt.loadNpmTasks('grunt-parallel');
+  }
+
+  process.chdir(parentcwd);
 
   grunt.registerMultiTask('express', function() {
     var thisTarget = this.target;
