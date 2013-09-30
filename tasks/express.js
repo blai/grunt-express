@@ -39,7 +39,7 @@ module.exports = function(grunt) {
     var options = this.options({
       serverreload: false,
       livereload: false,
-      open: false,
+      open: false
     });
 
     serverMap[thisTarget] = options.serverKey = path.resolve(watchDir, thisTarget + '.server');
@@ -95,12 +95,66 @@ module.exports = function(grunt) {
       if (_.filter(grunt.task._queue, function(task) {
         return !task.placeholder && task.task.name === 'watch';
       }).length === 0) {
-        grunt.task.run('watch');
+        if (options.livereload) {
+          var serverReloadTask = 'express-watch-server:' + thisTarget + ':' + options.serverKey,
+              liveReloadTask = 'express-watch-livereload:' + options.bases.join(',') + ':' + thisTarget + ':' + options.livereload,
+              parallelTask = 'parallel.' + util.makeServerTaskName(thisTarget, 'server');
+
+          grunt.config.set(parallelTask, {
+            tasks: [serverReloadTask, liveReloadTask],
+            options: {
+              stream: true,
+              grunt: true
+            }
+          });
+
+          grunt.task.run(parallelTask.replace('.', ':'));
+        } else {
+          grunt.task.run('watch');
+        }
       }
     } else {
       grunt.task.run(['express-server', thisTarget].join(':'));
     }
   });
+
+  grunt.registerTask('express-watch-livereload', 'wrapper for watch task, for running with grunt-parallel', function (bases, target, port) {
+    // dynamically add `grunt-contrib-watch` task to manage livereload of static `bases`
+    var taskName = 'watch.' + util.makeServerTaskName(target, 'livereload');
+    bases = bases.split(',');
+    port = parseInt(port) || DefaultLiveReloadPort;
+
+    grunt.config.set(taskName, {
+      files: _.map(bases, function(base) {
+        return base + '/**/*.*';
+      }),
+      options: {
+        livereload: port,
+        interrupt: true
+      }
+    });
+    grunt.task.run(taskName.replace('.', ':'));
+  });
+
+  grunt.registerTask('express-watch-server', 'wrapper for watch task, for running with grunt-parallel', function (target, serverKey) {
+    var taskName = 'watch.' + util.makeServerTaskName(target, 'server'),
+        options = grunt.config.get('express');
+
+    var watcherOptions = {
+      interrupt: true,
+      atBegin: true,
+      event: ['added', 'changed']
+    };
+    // dynamically add `grunt-contrib-watch` task to manage `grunt-express` sub task
+    grunt.config.set(taskName, {
+      files: serverKey,
+      tasks: [['express-server', target, serverKey].join(':'), 'express-keepalive'],
+      options: _.extend({}, options.watch, watcherOptions)
+    });
+
+    grunt.task.run(taskName.replace('.', ':'));
+  });
+
 
   grunt.registerTask('express-start', 'Start the server (or restart if already started)', function(target) {
     util.touchFile(serverMap[target]);
