@@ -1,7 +1,7 @@
 {
   "name": "grunt-express",
   "description": "Start (and supervise) an Express.js web server using grunt.js, works well with socket.io",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "homepage": "https://github.com/blai/grunt-express",
   "author": {
     "name": "Brian Lai"
