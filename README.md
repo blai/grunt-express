@@ -150,7 +150,7 @@ io.sockets.on('connection', function (socket) {
 });
 
 exports = module.exports = server;
-// delegates user() function
+// delegates use() function
 exports.use = function() {
   app.use.apply(app, arguments);
 };
