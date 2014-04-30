@@ -3,7 +3,6 @@
 var path = require('path');
 var temp = require('temp');
 var open = require('open');
-var _ = require('lodash');
 
 var util = require('../lib/util');
 
