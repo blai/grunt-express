@@ -484,6 +484,7 @@ module.exports = app;
 
 
 ## Release History
+ * 2014-05-09 `v1.3.5` #58
  * 2014-05-04 `v1.3.4` bump npm dependencies
  * 2014-04-30 `v1.3.0` fixes server reload
  * 2013-07-16 `v1.0.0-beta` use grunt-contrib-watch, support both serverreload and livereload
