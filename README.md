@@ -154,6 +154,9 @@ exports = module.exports = server;
 exports.use = function() {
   app.use.apply(app, arguments);
 };
+
+// For Express 4, for grunt-express to access middleware stack
+exports._router = app._router;
 ```
 
 When `server` option is not set, `express` task will generate a plain `connect` object for you.
