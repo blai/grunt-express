@@ -41,7 +41,8 @@
     "grunt-contrib-nodeunit": "^0.3.3",
     "grunt": "^0.4.4",
     "matchdep": "^0.3.0",
-    "request": "^2.34.0"
+    "request": "^2.34.0",
+    "lodash": "~2.4.1"
   },
   "peerDependencies": {
     "grunt": "~0.4.0"
