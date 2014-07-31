@@ -107,10 +107,10 @@ app.use(function staticsPlaceholder(req, res, next) {
 ```
 
 #### server
-Type: `String`
+Type: `String|Object`
 Default: null
 
-This option allows you to specify a path to a Node.js module that exports a "connect-like" object. Such object should have the following two functions:
+This option allows you to specify a "connect-like" object. This can optionally be a path to a Node.js module that exports a such an object. Such object should have the following two functions:
 
 1. `use(route, fn)` (https://github.com/senchalabs/connect/blob/master/lib/proto.js#L62)
 2. `listen()` (https://github.com/senchalabs/connect/blob/master/lib/proto.js#L227)
