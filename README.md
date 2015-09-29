@@ -213,22 +213,22 @@ Default: `false`
 
 Open the served page in your default browser. Specifying `true` opens the default server URL, while specifying a URL opens that URL.
 
-#### monitor (WARN: no longer availabe in 1.0+)
+#### monitor (WARN: no longer available in 1.0+)
 #### Please use a trailing `serverreload` option instead
 Type: `Object`
 Default: `null`
 
 Under the hood `grunt-express` uses [forever-monitor](https://github.com/nodejitsu/forever-monitor) to manage individual servers in separate child processes. This makes restarting the server automatically possible. This property allow you to pass in the `forever-monitor` options. When specified, the object will be used as the options hash when creating the forever monitor to manage the server in child process.
 
-#### keepalive (WARN: no longer availabe in 0.20+)
+#### keepalive (WARN: no longer available in 0.20+)
 #### Please use a trailing `express-keepalive` task instead
 Type: `Boolean`
 Default: `false`
 
 Keep the server alive indefinitely. Note that if this option is enabled, any tasks specified after this task will _never run_. By default, once grunt's tasks have completed, the web server stops. This option changes that behavior.
 
-#### monitor (WARN: no longer availabe in 1.0+)
-#### debug (WARN: no longer availabe in 1.0+)
+#### monitor (WARN: no longer available in 1.0+)
+#### debug (WARN: no longer available in 1.0+)
 Type: `Boolean`
 Default: `false`
 
