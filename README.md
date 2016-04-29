@@ -1,4 +1,4 @@
-# grunt-express [![Build Status](https://secure.travis-ci.org/hildjj/grunt-express.png?branch=master)](http://travis-ci.org/blai/grunt-express) [![Dependency Status](https://gemnasium.com/hildjj/grunt-express.png)](https://gemnasium.com/hildjj/grunt-express)
+# grunt-express [![Build Status](https://secure.travis-ci.org/hildjj/grunt-express.png?branch=master)](http://travis-ci.org/hildjj/grunt-express) [![Dependency Status](https://gemnasium.com/hildjj/grunt-express.png)](https://gemnasium.com/hildjj/grunt-express)
 
 ## grunt-express v1.0
 v1.0 is nearly a complete re-done, it acts as a higher-level grunt task that depends on (and consumes) `grunt-contrib-watch`. It will dynamically configure `watch` tasks based on your `express` task setup at runtime, and it will run `watch` if necessary. Here's the list of high level changes
