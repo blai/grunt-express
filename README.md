@@ -1,9 +1,9 @@
-# grunt-express [![Build Status](https://secure.travis-ci.org/blai/grunt-express.png?branch=master)](http://travis-ci.org/blai/grunt-express) [![Dependency Status](https://gemnasium.com/blai/grunt-express.png)](https://gemnasium.com/blai/grunt-express)
+# grunt-express [![Build Status](https://secure.travis-ci.org/hildjj/grunt-express.png?branch=master)](http://travis-ci.org/blai/grunt-express) [![Dependency Status](https://gemnasium.com/hildjj/grunt-express.png)](https://gemnasium.com/hildjj/grunt-express)
 
 ## grunt-express v1.0
 v1.0 is nearly a complete re-done, it acts as a higher-level grunt task that depends on (and consumes) `grunt-contrib-watch`. It will dynamically configure `watch` tasks based on your `express` task setup at runtime, and it will run `watch` if necessary. Here's the list of high level changes
 
-1. use `grunt-contrib-watch` to manage reloading express server, instead of `forever-monitor` 
+1. use `grunt-contrib-watch` to manage reloading express server, instead of `forever-monitor`
 2. support both `livereload` and `serverreload` (pre-v1.0 users: `grunt-express` will no longer manage to restart your server by default, you would have to set `serverreload` to `true` to regain the old behavior)
 3. if `serverreload` is set to `false` in `options`, then the following are true:
     * server will be started in the same process as your `grunt` (so developers can run debugger using Webstorm or other tools)
