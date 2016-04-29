@@ -13,11 +13,7 @@
   "bugs": {
     "url": "https://github.com/blai/grunt-express/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ],
+  "license": "MIT",
   "main": "gruntfile.js",
   "engines": {
     "node": ">= 0.8.0"
@@ -26,26 +22,27 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "connect": "^2.15.0",
-    "temp": "^0.7.0",
-    "touch": "0.0.3",
-    "connect-livereload": "^0.4.0",
-    "grunt-contrib-watch": "^0.6.1",
+    "connect": "^3.4.1",
+    "connect-livereload": "^0.5.4",
+    "grunt-contrib-watch": "^1.0",
+    "grunt-parallel": "^0.4.1",
     "open": "0.0.5",
-    "grunt-parallel": "^0.3.1",
-    "sugar": "^1.4.1"
+    "serve-static": "^1.10.2",
+    "sugar": "^1.4.1",
+    "temp": "^0.8.1",
+    "touch": "1.0"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-jshint": "^1.0",
     "express": "^4.1.1",
-    "grunt-contrib-nodeunit": "^0.3.3",
-    "grunt": "^0.4.4",
-    "matchdep": "^0.3.0",
+    "grunt-contrib-nodeunit": "^1.0",
+    "grunt": "^1.0",
+    "matchdep": "^1.0.1",
     "request": "^2.34.0",
-    "lodash": "~2.4.1"
+    "lodash": "~4.11.1"
   },
   "peerDependencies": {
-    "grunt": "~0.4.0"
+    "grunt": "~1.0"
   },
   "keywords": [
     "gruntplugin",
