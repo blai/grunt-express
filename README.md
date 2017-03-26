@@ -46,7 +46,7 @@ Configure one or more servers for grunt to start, the minimal config would be:
 ```javascript
   grunt.initConfig({
     express: {
-      default_option: {}
+      options: {}
     }
   });
 
